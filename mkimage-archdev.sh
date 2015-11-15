@@ -62,22 +62,23 @@ EOF
 
 arch-chroot $ROOTFS /bin/sh -c 'rm -r /usr/share/man/*'
 arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged; pacman -Rs --noconfirm haveged; pacman-key --populate archlinux; pkill gpg-agent"
-
+echo 'Add user build'
 arch-chroot $ROOTFS /bin/sh -c 'useradd -m build'
 echo 'build ALL=(ALL) NOPASSWD: ALL' >> $ROOTFS/etc/sudoers
+echo 'Install package-query'
 arch-chroot $ROOTFS /bin/sh -c 'cd /home/build \
-	&& curl https://aur.archlinux.org/packages/pa/package-query/package-query.tar.gz -0 | tar -zx \
+	&& curl https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz -0 | tar -zx \
 	&& chown -R build:build package-query \
 	&& cd package-query \
 	&& sudo -u build makepkg -si --noconfirm \
 	&& cd .. \
 	&& rm -rf package-query \
-	&& curl https://aur.archlinux.org/packages/ya/yaourt/yaourt.tar.gz -0 | tar -zx \
+	&& curl https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz -0 | tar -zx \
 	&& chown -R build:build yaourt \
 	&& cd yaourt \
 	&& sudo -u build makepkg -si --noconfirm \
 	&& cd .. \
-	&& rm -rf /tmp/yaourt'
+	&& rm -rf yaourt'
 	
 arch-chroot $ROOTFS /bin/sh -c "ln -s /usr/share/zoneinfo/UTC /etc/localtime"
 echo 'en_US.UTF-8 UTF-8' > $ROOTFS/etc/locale.gen
