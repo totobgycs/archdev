@@ -53,7 +53,7 @@ expect <<EOF
 	}
 	set timeout 60
 
-	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget xorg-xauth xterm haveged --ignore $PKGIGNORE
+	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -66,6 +66,8 @@ arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill havege
 echo 'Add user build'
 arch-chroot $ROOTFS /bin/sh -c 'useradd -m build'
 echo 'build ALL=(ALL) NOPASSWD: ALL' >> $ROOTFS/etc/sudoers
+arch-chroot $ROOTFS /bin/sh -c 'rm /etc/pacman.d/mirrorlist'
+arch-chroot $ROOTFS /bin/sh -c 'echo "Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist'
 echo 'Install package-query'
 arch-chroot $ROOTFS /bin/sh -c 'cd /home/build \
 	&& curl https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz -0 | tar -zx \
@@ -88,7 +90,6 @@ echo 'nl_NL.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 echo 'ro_RO.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 echo 'de_DE.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 arch-chroot $ROOTFS locale-gen
-arch-chroot $ROOTFS /bin/sh -c 'echo "Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist'
 arch-chroot $ROOTFS /bin/sh -c 'rm /var/cache/pacman/pkg/*'
 
 # udev doesn't work in containers, rebuild /dev
