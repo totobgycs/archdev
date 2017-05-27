@@ -53,7 +53,7 @@ expect <<EOF
 	}
 	set timeout 60
 
-	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged --ignore $PKGIGNORE
+	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel systemd git wget haveged --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -66,7 +66,8 @@ rm -r $ROOTFS/usr/share/man/*
 rm $ROOTFS/etc/pacman.d/mirrorlist
 echo "Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch" > $ROOTFS/etc/pacman.d/mirrorlist
 
-arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged; pacman-key --populate archlinux; pkill gpg-agent; pacman -Rs --noconfirm haveged;"
+arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged;pacman -Rs --noconfirm haveged"
+arch-chroot $ROOTFS /bin/sh -c "pacman-key --populate archlinux; pkill gpg-agent"
 
 echo 'Add user build'
 arch-chroot $ROOTFS /bin/sh -c 'useradd -m build'
@@ -86,7 +87,6 @@ arch-chroot $ROOTFS /bin/sh -c 'cd /home/build \
 	&& cd .. \
 	&& rm -rf yaourt'
 	
-arch-chroot $ROOTFS /bin/sh -c "ln -s /usr/share/zoneinfo/UTC /etc/localtime"
 echo 'en_US.UTF-8 UTF-8' > $ROOTFS/etc/locale.gen
 echo 'hu_HU.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 echo 'nl_NL.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
