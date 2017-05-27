@@ -58,16 +58,19 @@ expect <<EOF
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
 		-exact "installation? \[Y/n\]" { send -- "y\r"; exp_continue }
+		-exact "delete it? \[Y/n\]" { send -- "y\r"; exp_continue }
 	}
 EOF
 
-arch-chroot $ROOTFS /bin/sh -c 'rm -r /usr/share/man/*'
-arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged; pacman -Rs --noconfirm haveged; pacman-key --populate archlinux; pkill gpg-agent"
+rm -r $ROOTFS/usr/share/man/*
+rm $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch" > $ROOTFS/etc/pacman.d/mirrorlist
+
+arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged; pacman-key --populate archlinux; pkill gpg-agent; pacman -Rs --noconfirm haveged;"
+
 echo 'Add user build'
 arch-chroot $ROOTFS /bin/sh -c 'useradd -m build'
 echo 'build ALL=(ALL) NOPASSWD: ALL' >> $ROOTFS/etc/sudoers
-arch-chroot $ROOTFS /bin/sh -c 'rm /etc/pacman.d/mirrorlist'
-arch-chroot $ROOTFS /bin/sh -c 'echo "Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist'
 echo 'Install package-query'
 arch-chroot $ROOTFS /bin/sh -c 'cd /home/build \
 	&& curl https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz -0 | tar -zx \
