@@ -53,7 +53,7 @@ expect <<EOF
 	}
 	set timeout 300
 
-	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel systemd git wget haveged --ignore $PKGIGNORE
+	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
