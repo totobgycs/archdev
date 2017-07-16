@@ -53,7 +53,7 @@ expect <<EOF
 	}
 	set timeout 300
 
-	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged --ignore $PKGIGNORE
+	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged yajl --ignore $PKGIGNORE
 	expect {
 		-exact "anyway? \[Y/n\] " { send -- "n\r"; exp_continue }
 		-exact "(default=all): " { send -- "\r"; exp_continue }
@@ -66,6 +66,7 @@ rm $ROOTFS/etc/pacman.d/mirrorlist
 echo "Server = https://archlinux.surlyjake.com/archlinux/$repo/os/$arch" > $ROOTFS/etc/pacman.d/mirrorlist
 echo "Server = http://mirrors.evowise.com/archlinux/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
 echo "Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = http://arch.apt-get.eu/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
 
 arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged;pacman -Rs --noconfirm haveged"
 arch-chroot $ROOTFS /bin/sh -c "pacman-key --populate archlinux; pkill gpg-agent"
@@ -94,7 +95,7 @@ echo 'nl_NL.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 echo 'ro_RO.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 echo 'de_DE.UTF-8 UTF-8' >> $ROOTFS/etc/locale.gen
 arch-chroot $ROOTFS locale-gen
-arch-chroot $ROOTFS /bin/sh -c 'rm /var/cache/pacman/pkg/*'
+arch-chroot $ROOTFS /bin/sh -c 'yes | yaourt -Scc'
 
 # udev doesn't work in containers, rebuild /dev
 DEV=$ROOTFS/dev
