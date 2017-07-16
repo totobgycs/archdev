@@ -63,10 +63,10 @@ EOF
 
 rm -r $ROOTFS/usr/share/man/*
 rm $ROOTFS/etc/pacman.d/mirrorlist
-echo "Server = https://archlinux.surlyjake.com/archlinux/$repo/os/$arch" > $ROOTFS/etc/pacman.d/mirrorlist
-echo "Server = http://mirrors.evowise.com/archlinux/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
-echo "Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
-echo "Server = http://arch.apt-get.eu/$repo/os/$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = https://archlinux.surlyjake.com/archlinux/\$repo/os/\$arch" > $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = http://mirrors.evowise.com/archlinux/\$repo/os/\$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = http://mirror.rackspace.com/archlinux/\$repo/os/\$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
+echo "Server = http://arch.apt-get.eu/\$repo/os/\$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
 
 arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged;pacman -Rs --noconfirm haveged"
 arch-chroot $ROOTFS /bin/sh -c "pacman-key --populate archlinux; pkill gpg-agent"
