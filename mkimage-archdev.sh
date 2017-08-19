@@ -51,7 +51,7 @@ expect <<EOF
 		sleep .1
 		exp_send -s -- \$arg
 	}
-	set timeout 300
+	set timeout 600
 
 	spawn pacstrap -C ./mkimage-arch-pacman.conf -c -d -G -i $ROOTFS base base-devel git wget haveged yajl --ignore $PKGIGNORE
 	expect {
@@ -68,8 +68,11 @@ echo "Server = http://mirrors.evowise.com/archlinux/\$repo/os/\$arch" >> $ROOTFS
 echo "Server = http://mirror.rackspace.com/archlinux/\$repo/os/\$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
 echo "Server = http://arch.apt-get.eu/\$repo/os/\$arch" >> $ROOTFS/etc/pacman.d/mirrorlist
 
-arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024; pacman-key --init; pkill haveged;pacman -Rs --noconfirm haveged"
-arch-chroot $ROOTFS /bin/sh -c "pacman-key --populate archlinux; pkill gpg-agent"
+arch-chroot $ROOTFS /bin/sh -c "haveged -w 1024"
+arch-chroot $ROOTFS /bin/sh -c "pacman-key --init"
+arch-chroot $ROOTFS /bin/sh -c "pkill haveged"
+arch-chroot $ROOTFS /bin/sh -c "pacman-key --populate archlinux"
+arch-chroot $ROOTFS /bin/sh -c "pacman -Rs --noconfirm haveged"
 
 echo 'Add user build'
 arch-chroot $ROOTFS /bin/sh -c 'useradd -m build'
